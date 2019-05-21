@@ -14,19 +14,20 @@
 
 void additem();
 void edititem();
+
 struct ITEM {
   char name[100];
   int price;
   int quantity;
-}
-item;
+}item;
+
 FILE * fp;
 char choose;
 void display();
 void clr(){
 	system("cls");
 }
-//colour 
+//change color
 void changeColor(char color[]){
 	char variable[17]="color ";
     strcat(variable,color);
@@ -36,30 +37,37 @@ void changeColor(char color[]){
 void changeToDefaultColor(){
 	changeColor("0f");
 }
+// display heading
+void notice(char s[]){
+	printf("\t\t\t\t------------- %s -------------\n\n",s);
+	printf("\t\t\t*********************************************************\n\n\n\n");
+}
 
 //to print data centrally alligned
 void print(char s[]){
   printf("\t\t\t%s",s);	
 }
-
-
-
-int main() {
-    	
-  changeColor("0f");
-  // ascii art
+//ascii art
+void asciiArt(){
+  changeColor("0b");
   printf("\n");
   printf("\t __ ___  __   __  __    _   _  __   _     __   __  __ _   _  __  _    ___    __      __ ___  __ _   _\n");
   printf("\t/__  |  /  | |_/ |_     ||_|| |__| | | | |__| / _ |_  ||_|| |_  | | |  |    /__ |_| /__  |  |_  ||_||\n");
   printf("\t__/  |  |__/ | | |__    |   | |  | | |_| |  | |__||__ |   | |__ | |_|  |    __/  /  __/  |  |__ |   |\n\n");
+}
 
 
-
-  print("what would you like to do?\n");
-  print("enter the number to perform operation\n");
-  print("enter 1 to add items \n");
-  print("enter 2 to edit items \n");
-  print("enter 3 to display items\n\t\t\t");
+int main() {
+   clr(); 	
+  asciiArt();
+  //changeColor("0f");
+  notice("MAIN MENU");
+  print("What would you like to do?\n");
+  print("Enter the number to perform operation.\n");
+  print("Enter 1 to add items. \n");
+  print("Enter 2 to edit items. \n");
+  print("Enter 3 to display items.\n");
+  print("Enter 4 to exit.\n\t\t\t");
   choose=getch();
   switch(choose){
   	case '1':
@@ -71,16 +79,18 @@ int main() {
 	case '3':
 		display();
 		break;
+	case '4':
+		exit(0);
 	default:
 		clr();
 		main();
   }
-//  clr();
+
   
 }
 // main menu
 void gotoMenu(){
-		printf("\ndo you want to go back to main menu(y/n)\n");
+		print("Do you want to go back to main menu(y/n)?");
 	choose=getch();
 	switch(choose){
 		case 'y':
@@ -97,25 +107,27 @@ void gotoMenu(){
 
 //to edit items
 void edititem(){
+	clr();
+	asciiArt();
+	notice("EDIT ITEMS");
 	char newn[100];
-	printf("enter the name of item to edit");
+	print("Enter the name of item to edit : ");
 	scanf("%s",newn);
 	fflush(stdin);
 	fp=fopen("D:\\project.txt", "a+");
 	rewind(fp);
 	while(fread(&item,sizeof(struct ITEM),1,fp)!=NULL){
-		//printf("%s",strcmp(item.name,newn));
-		//fscanf(fp,"%s%d%d",item.name,item.quantity,item.price);
 		if(strcmp(item.name,newn)==1){
-			//ftell(fp);
-			//fseek(fp,0,SEEK_CUR);
-			printf("\nname is %s \n quantity is %d \nrate is %d ",item.name,item.quantity,item.price);
-			print("enter new name : ");
+			notice("Item Details ");
+			printf("\t\t\tName : %s ",item.name);
+		    printf("\t\t\tQuantity : %d\n",item.quantity); 
+			printf("\t\t\tRate : %d \n\n",item.price);
+			print("Enter new name : ");
 			fflush(stdin);
             fgets(item.name, sizeof(item.name),stdin);
-			print("enter new quantity : ");
+			print("\n\t\t\tEnter new quantity : ");
 			scanf("%d",&item.quantity);
-			printf("enter new price : ");
+			printf("\n\t\t\tEnter new price : ");
 			scanf("%d",&item.price);
 			ftell(fp);
 			fseek(fp,0,SEEK_CUR);
@@ -127,28 +139,27 @@ void edititem(){
 		   	gotoMenu();	
 		}
 		else {
-			printf("the item does not exists");
+			printf("\n\t\t\tThe item does not exists");
 			gotoMenu();
 		}
 	}
 }
 
 
-void notice(char s[]){
-	printf("\t\t\t------ %s ------\n\n",s);
-}
-
 // to display items
 void display(){
   clr();
-  notice("Displaying");
+  asciiArt();
+  notice("DISPLAYING ITEMS");
   printf("Items are :\n");
 	printf("ItemNo.\t Name.\t Quantity.\tPrice.\n");
 	int i=1;
 	fp=fopen("D:\\project.txt", "r");
 	while(fread(&item,sizeof(item),1,fp)!=NULL){
-		printf("\n%d\t%s",i,item.name);
-		printf("\t%d\t%d",item.quantity,item.price);
+		printf("\n%d",i);
+		printf("\t%s",item->name);
+		printf("\t\t   %d",item->quantity);
+		printf("\t\t%d\t\n",item->price);
 		i++;
 	}
 	gotoMenu();
@@ -157,30 +168,28 @@ void display(){
 }
 
 
-
-
 // to add items
 void additem() {	
   clr();
+  asciiArt();
   notice("Adding a Item");
   fp = fopen("D:\\project.txt", "a");
-    print("enter the name");
-   // gets(item.name);
+    print("Enter the name : ");
     fflush(stdin);
     fgets(item.name, sizeof(item.name),stdin);
-    print("enter the price");
+    print("Enter the price : ");
     scanf("%d", & item.price);
-    print("enter the quantity");
+    print("Enter the quantity : ");
     scanf("%d", & item.quantity);
     fwrite( & item, sizeof(struct ITEM), 1, fp);
     fclose(fp);
-    printf("Enter New Record(Y/N)?");
+    print("Enter New Record(Y/N)?\n");
     choose=getch();
     switch(toupper(choose)){
     	case 'Y':
     		additem();
     	default:
-    		main();
+    		gotoMenu();
     		clr();
 	}
 }
