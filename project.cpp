@@ -14,6 +14,8 @@
 
 void additem();
 void edititem();
+void search();
+void update(struct ITEM,struct ITEM);
 
 struct ITEM {
   char name[100];
@@ -67,7 +69,8 @@ int main() {
   print("Enter 1 to add items. \n");
   print("Enter 2 to edit items. \n");
   print("Enter 3 to display items.\n");
-  print("Enter 4 to exit.\n\t\t\t");
+  print("Enter 4 to search.\n");
+  print("Enter 5 to exit.");
   choose=getch();
   switch(choose){
   	case '1':
@@ -80,7 +83,10 @@ int main() {
 		display();
 		break;
 	case '4':
+		search();
+	case '5':
 		exit(0);
+
 	default:
 		clr();
 		main();
@@ -90,6 +96,7 @@ int main() {
 }
 // main menu
 void gotoMenu(){
+	printf("\n");
 		print("Do you want to go back to main menu(y/n)?");
 	choose=getch();
 	switch(choose){
@@ -112,31 +119,26 @@ void edititem(){
 	notice("EDIT ITEMS");
 	char newn[100];
 	print("Enter the name of item to edit : ");
-	scanf("%s",newn);
 	fflush(stdin);
-	fp=fopen("D:\\project.txt", "a+");
-	rewind(fp);
-	while(fread(&item,sizeof(struct ITEM),1,fp)!=NULL){
-		if(strcmp(item.name,newn)==1){
+	gets(newn);
+	fflush(stdin);
+	FILE *fp1=fopen("D:\\project.txt", "r");
+	while(fread(&item,sizeof(struct ITEM),1,fp1)){
+		if(strcmp(item.name,newn)==0){
+			struct ITEM i=item;
 			notice("Item Details ");
 			printf("\t\t\tName : %s ",item.name);
 		    printf("\t\t\tQuantity : %d\n",item.quantity); 
 			printf("\t\t\tRate : %d \n\n",item.price);
 			print("Enter new name : ");
-			fflush(stdin);
-            fgets(item.name, sizeof(item.name),stdin);
+			gets(item.name);
 			print("\n\t\t\tEnter new quantity : ");
 			scanf("%d",&item.quantity);
 			printf("\n\t\t\tEnter new price : ");
 			scanf("%d",&item.price);
-			ftell(fp);
-			fseek(fp,0,SEEK_CUR);
-			fwrite(&item,sizeof(struct ITEM),1,fp);
-			rewind(fp);
-			fclose(fp);
-			clr();
-			print("Item Succesfully updated ");
-		   	gotoMenu();	
+			fwrite(&item,sizeof(struct ITEM),1,fp1);
+			fclose(fp1);
+			update(item,i);
 		}
 		else {
 			printf("\n\t\t\tThe item does not exists");
@@ -145,7 +147,50 @@ void edititem(){
 	}
 }
 
+void update(struct ITEM itemm,struct ITEM i){
+	FILE *fp5=fopen("D:\\project.txt","r");
+	FILE *fp6=fopen("D:\\project1.txt","w");
+	while(fread(&item,sizeof(struct ITEM),1,fp5)){
+		if(strcmp(item.name,itemm.name)!=0&&item.price!=itemm.price&&item.quantity!=itemm.quantity){
+			fwrite(&item,sizeof(struct ITEM),1,fp6);
+		}
+	}
+	fwrite(&i,sizeof(struct ITEM),1,fp6);
+	fclose(fp5);
+	fclose(fp6);
+	system("del D:\project.txt");
+	system("move D:\project1.txt D:\project.txt");
+	clr();
+	print("\nFile updated succesfully.");
+	gotoMenu();	
+	
+}
 
+void search(){
+		clr();
+	asciiArt();
+	notice("SEARCH ITEM");
+	char newn[100];
+	print("Enter the name of item to search : ");
+	fflush(stdin);
+	gets(newn);
+	FILE *fp1=fopen("D:\\project.txt", "r");
+	while(fread(&item,sizeof(struct ITEM),1,fp1)){
+		if(strcmp(item.name,newn)==0){
+			notice("Item Details ");
+			printf("\t\t\tName : %s ",item.name);
+		    printf("\t\t\tQuantity : %d\n",item.quantity); 
+			printf("\t\t\tRate : %d \n\n",item.price);
+		    fclose(fp1);
+		   	gotoMenu();	
+		}
+		else {
+			printf("\n\t\t\tThe item does not exists");
+			gotoMenu();
+		}
+	}
+
+}
 // to display items
 void display(){
   clr();
@@ -157,9 +202,9 @@ void display(){
 	fp=fopen("D:\\project.txt", "r");
 	while(fread(&item,sizeof(item),1,fp)!=NULL){
 		printf("\n%d",i);
-		printf("\t%s",item->name);
-		printf("\t\t   %d",item->quantity);
-		printf("\t\t%d\t\n",item->price);
+		printf("\t%s",item.name);
+		printf("\t\t   %d",item.quantity);
+		printf("\t\t%d\t\n",item.price);
 		i++;
 	}
 	gotoMenu();
@@ -176,7 +221,7 @@ void additem() {
   fp = fopen("D:\\project.txt", "a");
     print("Enter the name : ");
     fflush(stdin);
-    fgets(item.name, sizeof(item.name),stdin);
+    gets(item.name);
     print("Enter the price : ");
     scanf("%d", & item.price);
     print("Enter the quantity : ");
