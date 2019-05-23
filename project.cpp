@@ -1,6 +1,7 @@
 #include<stdio.h>
-
+#include <unistd.h>
 #include<stdlib.h>
+
 #include<time.h>
 
 #include<string.h>
@@ -42,7 +43,7 @@ void clr(){
 	system("cls");
 }
 //change color
-void changeColor(char color[]){
+void changeColor(const char color[]){
 	char variable[17]="color ";
     strcat(variable,color);
     system(variable);
@@ -52,13 +53,13 @@ void changeToDefaultColor(){
 	changeColor("0f");
 }
 // display heading
-void notice(char s[]){
+void notice(const char s[]){
 	printf("\t\t\t\t------------- %s -------------\n\n",s);
 	printf("\t\t\t*********************************************************\n\n\n\n");
 }
 
 //to print data centrally alligned
-void print(char s[]){
+void print(const char s[]){
   printf("\t\t\t%s",s);	
 }
 //ascii art
@@ -76,7 +77,17 @@ int main() {
   srand(time(NULL)); 
   asciiArt();
   //changeColor("0f");
-  notice("MAIN MENU");
+  char username[20],password[20];
+  notice("Login");
+  print("Enter Username : ");
+  gets(username);
+  print("Enter Password : ");
+  gets(password);
+  if(strcmp("admin",username)==0&&strcmp("admin",password)==0)
+{
+	clr();
+	asciiArt();  	
+ notice("MAIN MENU");
   print("What would you like to do?\n");
   print("Enter the number to perform operation.\n");
   print("Enter 1 to add items. \n");
@@ -93,28 +104,35 @@ int main() {
   		additem();
   		break;
   	case '2':
-	  edititem();
-	  break;	
+	    edititem();
+	    break;	
 	case '3':
 		display();
 		break;
 	case '4':
 		search();
+		break;
 	case '5':
 		deleteitem();
+		break;
 	case '6':
 		recorditem();
+		break;
 	case '7':
 		listitem();
+		break;
 	case '8':
 		exit(0);
-
-
 	default:
 		clr();
 		main();
   }
-
+	}
+	else{
+	     print("Username/Password not matched.");
+	     getch();
+	     main();
+	}
   
 }
 // main menu
